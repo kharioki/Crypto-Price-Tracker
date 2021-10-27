@@ -1,11 +1,21 @@
 import React from 'react'
 import { StyleSheet, View, Text, Image, Dimensions } from 'react-native'
-import { ChartDot, ChartPath, ChartPathProvider } from '@rainbow-me/animated-charts';
+import { ChartDot, ChartPath, ChartPathProvider, ChartYLabel } from '@rainbow-me/animated-charts';
 
 export const { width: SIZE } = Dimensions.get('window');
 
 const Chart = ({ name, logoUrl, symbol, currentPrice, priceChangePercentage7d, sparklineData }) => {
-  const priceChangeColor = priceChangePercentage7d > 0 ? '#34c759' : '#ff3b30'
+  const priceChangeColor = priceChangePercentage7d > 0 ? '#34c759' : '#ff3b30';
+
+  const formatUSD = (value) => {
+    'worklet';
+    if (value === '') {
+      return `$ ${currentPrice.toLocaleString('en-US', { currency: 'USD' })}`;
+    }
+
+    const formattedValue = `$ ${parseFloat(value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`
+    return formattedValue;
+  };
 
   return (
     <ChartPathProvider data={{ points: sparklineData, smoothingStrategy: 'bezier' }}>
@@ -20,14 +30,15 @@ const Chart = ({ name, logoUrl, symbol, currentPrice, priceChangePercentage7d, s
           </View>
 
           <View style={styles.lower}>
-            <Text style={styles.price}>${currentPrice.toLocaleString('en-US', { currency: 'USD' })}</Text>
+            <ChartYLabel format={formatUSD} style={styles.price} />
+            {/* <Text style={styles.price}>${currentPrice.toLocaleString('en-US', { currency: 'USD' })}</Text> */}
             <Text style={[styles.percentage, { color: priceChangeColor }]}>{priceChangePercentage7d.toFixed(2)}%</Text>
           </View>
         </View>
 
         <View style={styles.chartLineWrapper}>
           <ChartPath height={SIZE / 2} stroke="black" width={SIZE} />
-          <ChartDot style={{ backgroundColor: 'blue' }} />
+          <ChartDot style={{ backgroundColor: 'black' }} />
         </View>
       </View>
     </ChartPathProvider>
