@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useMemo, useState } from 'react';
+import React, { useCallback, useRef, useMemo, useState, useEffect } from 'react';
 import { FlatList, StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import {
   BottomSheetModal,
@@ -8,6 +8,7 @@ import {
 import ListItem from './components/ListItem';
 import Chart from './components/Chart';
 import { SAMPLE_DATA } from './assets/data/sampleData';
+import { getMarketData } from './services/cryptoService';
 
 const ListHeader = () => (
   <>
@@ -20,6 +21,7 @@ const ListHeader = () => (
 
 export default function App() {
   const [selectedCoinData, setSelectedCoinData] = useState(null);
+  const [data, setData] = useState([]);
 
   const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['40%'], []);
@@ -29,11 +31,20 @@ export default function App() {
     bottomSheetModalRef.current?.present();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const marketData = await getMarketData();
+      setData(marketData);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={styles.container}>
         <FlatList
-          data={SAMPLE_DATA}
+          data={data}
           renderItem={({ item }) => (
             <ListItem
               name={item.name}
