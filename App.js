@@ -24,7 +24,7 @@ export default function App() {
   const [data, setData] = useState([]);
 
   const bottomSheetModalRef = useRef(null);
-  const snapPoints = useMemo(() => ['40%'], []);
+  const snapPoints = useMemo(() => ['45%'], []);
 
   const openModal = useCallback((coinData) => {
     setSelectedCoinData(coinData);
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   titleWrapper: {
-    marginTop: 20,
+    marginTop: 10,
     padding: 16,
   },
   largeTitle: {
@@ -97,9 +97,9 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#eaeaea',
     marginHorizontal: 16,
-    marginTop: 16,
   },
   bottomSheetModal: {
+    marginBottom: 4,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
