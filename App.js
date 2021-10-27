@@ -1,11 +1,12 @@
-import React, { useCallback, useRef, useMemo } from 'react';
+import React, { useCallback, useRef, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
-import ListItem from './components/ListItem';
 
+import ListItem from './components/ListItem';
+import Chart from './components/Chart';
 import { SAMPLE_DATA } from './assets/data/sampleData';
 
 const ListHeader = () => (
@@ -18,14 +19,13 @@ const ListHeader = () => (
 )
 
 export default function App() {
-  // ref
-  const bottomSheetModalRef = useRef(null);
+  const [selectedCoinData, setSelectedCoinData] = useState(null);
 
-  // variables
+  const bottomSheetModalRef = useRef(null);
   const snapPoints = useMemo(() => ['50%'], []);
 
-  // callbacks
-  const openModal = useCallback(() => {
+  const openModal = useCallback((coinData) => {
+    setSelectedCoinData(coinData);
     bottomSheetModalRef.current?.present();
   }, []);
 
@@ -41,7 +41,7 @@ export default function App() {
               logoUrl={item.image}
               currentPrice={item.current_price}
               priceChangePercentage7d={item.price_change_percentage_7d_in_currency}
-              onPress={openModal}
+              onPress={() => openModal(item)}
             />
           )}
           keyExtractor={(item) => item.id}
@@ -51,10 +51,18 @@ export default function App() {
           ref={bottomSheetModalRef}
           index={0}
           snapPoints={snapPoints}
+          style={styles.bottomSheetModal}
         >
-          <View style={styles.contentContainer}>
-            <Text>Awesome 🎉</Text>
-          </View>
+          {selectedCoinData ? (
+            <Chart
+              name={selectedCoinData?.name}
+              symbol={selectedCoinData?.symbol}
+              logoUrl={selectedCoinData?.image}
+              currentPrice={selectedCoinData?.current_price}
+              priceChangePercentage7d={selectedCoinData?.price_change_percentage_7d_in_currency}
+              sparklineData={selectedCoinData?.sparkline_in_7d.price}
+            />
+          ) : null}
         </BottomSheetModal>
       </SafeAreaView>
     </BottomSheetModalProvider>
@@ -79,5 +87,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#eaeaea',
     marginHorizontal: 16,
     marginTop: 16,
+  },
+  bottomSheetModal: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });
